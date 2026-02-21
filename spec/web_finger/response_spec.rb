@@ -36,7 +36,7 @@ RSpec.describe WebFinger::Response do
 
       expect(response.subject).to eq 'acct:user@example.com'
       expect(response.aliases).to eq ['https://example.com/@user', 'https://example.com/users/user']
-      expect(response.properties).to eq('http://schema.org/name' => 'Example User')
+      expect(response.properties).to eq('http://schema.org/name': 'Example User')
       expect(response.links.size).to eq 3
     end
 

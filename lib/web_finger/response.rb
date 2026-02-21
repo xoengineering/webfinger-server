@@ -20,12 +20,12 @@ module WebFinger
     # @return [WebFinger::Response]
     # @raise [WebFinger::ParseError] If JSON is malformed
     def self.parse json
-      data = json.is_a?(String) ? JSON.parse(json) : json
+      data = json.is_a?(String) ? JSON.parse(json, symbolize_names: true) : deep_symbolize_keys(json)
 
-      new subject:    data['subject'],
-          aliases:    data['aliases'] || [],
-          properties: data['properties'] || {},
-          links:      (data['links'] || []).map { it.transform_keys(&:to_sym) }
+      new subject:    data[:subject],
+          aliases:    data[:aliases] || [],
+          properties: data[:properties] || {},
+          links:      data[:links] || []
     rescue JSON::ParserError => e
       raise ParseError, "Invalid JSON: #{e.message}"
     end
@@ -73,5 +73,18 @@ module WebFinger
     # Convert to JSON string
     # @return [String]
     def to_json(*) = to_h.to_json(*)
+
+    def self.deep_symbolize_keys hash
+      hash.each_with_object({}) do |(key, value), result|
+        sym_key = key.to_sym
+        result[sym_key] = case value
+                          when Hash  then deep_symbolize_keys(value)
+                          when Array then value.map { it.is_a?(Hash) ? deep_symbolize_keys(it) : it }
+                          else value
+                          end
+      end
+    end
+
+    private_class_method :deep_symbolize_keys
   end
 end
