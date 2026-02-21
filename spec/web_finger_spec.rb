@@ -1,13 +1,13 @@
 RSpec.describe WebFinger do
   let :jrd_json do
     {
-      'subject' => 'acct:user@example.com',
-      'aliases' => ['https://example.com/@user'],
-      'links'   => [
+      subject: 'acct:user@example.com',
+      aliases: ['https://example.com/@user'],
+      links:   [
         {
-          'rel'  => 'self',
-          'type' => 'application/activity+json',
-          'href' => 'https://example.com/users/user'
+          rel:  'self',
+          type: 'application/activity+json',
+          href: 'https://example.com/users/user'
         }
       ]
     }.to_json

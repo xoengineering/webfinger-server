@@ -24,7 +24,7 @@ module WebFinger
     end
 
     # Fetch the full JRD for a resource
-    # @param resource [String] The resource URI (e.g., "acct:user@domain")
+    # @param resource [String] The resource URI (e.g., 'acct:user@domain')
     # @param rel [String, Array<String>, nil] Optional rel type(s) to filter links
     # @return [WebFinger::Response]
     # @raise [WebFinger::FetchError] If HTTP request fails
@@ -33,7 +33,7 @@ module WebFinger
     def fetch resource, rel: nil
       host, port = extract_host_and_port resource
       url        = webfinger_url host, port, resource, rel: rel
-      response = http_client.get url
+      response   = http_client.get url
 
       raise_for_status response, resource unless response.status.success?
 
@@ -43,7 +43,7 @@ module WebFinger
     end
 
     # Resolve a resource URI to its ActivityPub actor URI
-    # @param resource [String] The resource URI (e.g., "acct:user@domain")
+    # @param resource [String] The resource URI (e.g., 'acct:user@domain')
     # @return [String, nil] The actor URI, or nil if no ActivityPub link found
     def resolve resource
       fetch(resource).actor_uri

@@ -3,7 +3,7 @@ require 'rack/test'
 RSpec.describe WebFinger::HostMeta do
   include Rack::Test::Methods
 
-  let(:inner_app) { ->(_env) { [200, { 'content-type' => 'text/plain' }, ['OK']] } }
+  let(:inner_app) { ->(_env) { [200, { 'content-type': 'text/plain' }, ['OK']] } }
   let(:app) { described_class.new inner_app, domain: 'example.com' }
 
   describe 'GET /.well-known/host-meta' do

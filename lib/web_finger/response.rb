@@ -6,8 +6,8 @@ module WebFinger
   #
   # @example
   #   response = WebFinger::Response.parse('{"subject":"acct:user@example.com",...}')
-  #   response.subject    # => "acct:user@example.com"
-  #   response.actor_uri  # => "https://example.com/users/user"
+  #   response.subject    #=> "acct:user@example.com"
+  #   response.actor_uri  #=> "https://example.com/users/user"
   class Response
     ACTIVITY_PUB_TYPES = [
       'application/activity+json',
@@ -21,12 +21,16 @@ module WebFinger
     # @return [WebFinger::Response]
     # @raise [WebFinger::ParseError] If JSON is malformed
     def self.parse json
-      data = json.is_a?(String) ? JSON.parse(json, symbolize_names: true) : json.deep_symbolize_keys
+      data = if json.is_a? String
+               JSON.parse json, symbolize_names: true
+             else
+               json.deep_symbolize_keys
+             end
 
       new subject:    data[:subject],
-          aliases:    data[:aliases] || [],
+          aliases:    data[:aliases]    || [],
           properties: data[:properties] || {},
-          links:      data[:links] || [],
+          links:      data[:links]      || [],
           expires:    data[:expires]
     rescue JSON::ParserError => e
       raise ParseError, "Invalid JSON: #{e.message}"

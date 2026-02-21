@@ -3,21 +3,21 @@ RSpec.describe WebFinger::Client do
 
   let :jrd_json do
     {
-      'subject' => 'acct:user@example.com',
-      'aliases' => [
+      subject: 'acct:user@example.com',
+      aliases: [
         'https://example.com/@user',
         'https://example.com/users/user'
       ],
-      'links'   => [
+      links:   [
         {
-          'rel'  => 'http://webfinger.net/rel/profile-page',
-          'type' => 'text/html',
-          'href' => 'https://example.com/@user'
+          rel:  'http://webfinger.net/rel/profile-page',
+          type: 'text/html',
+          href: 'https://example.com/@user'
         },
         {
-          'rel'  => 'self',
-          'type' => 'application/activity+json',
-          'href' => 'https://example.com/users/user'
+          rel:  'self',
+          type: 'application/activity+json',
+          href: 'https://example.com/users/user'
         }
       ]
     }.to_json
@@ -26,7 +26,7 @@ RSpec.describe WebFinger::Client do
   describe '#fetch' do
     it 'fetches and parses JRD for an acct: URI' do
       stub_request(:get, 'https://example.com/.well-known/webfinger?resource=acct%3Auser%40example.com')
-        .to_return status: 200, body: jrd_json, headers: { 'Content-Type' => 'application/jrd+json' }
+        .to_return status: 200, body: jrd_json, headers: { 'Content-Type': 'application/jrd+json' }
 
       response = client.fetch 'acct:user@example.com'
 
@@ -37,7 +37,7 @@ RSpec.describe WebFinger::Client do
 
     it 'fetches JRD for an https: URI' do
       stub_request(:get, 'https://example.com/.well-known/webfinger?resource=https%3A%2F%2Fexample.com%2Fusers%2Fuser')
-        .to_return status: 200, body: jrd_json, headers: { 'Content-Type' => 'application/jrd+json' }
+        .to_return status: 200, body: jrd_json, headers: { 'Content-Type': 'application/jrd+json' }
 
       response = client.fetch 'https://example.com/users/user'
 
@@ -124,9 +124,9 @@ RSpec.describe WebFinger::Client do
 
     it 'returns nil when no ActivityPub link in JRD' do
       no_activity_pub_jrd = {
-        'subject' => 'acct:user@example.com',
-        'links'   => [
-          { 'rel' => 'http://webfinger.net/rel/profile-page', 'type' => 'text/html', 'href' => 'https://example.com/@user' }
+        subject: 'acct:user@example.com',
+        links:   [
+          { rel: 'http://webfinger.net/rel/profile-page', type: 'text/html', href: 'https://example.com/@user' }
         ]
       }.to_json
 

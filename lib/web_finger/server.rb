@@ -14,10 +14,7 @@ module WebFinger
   class Server
     WEBFINGER_PATH = '/.well-known/webfinger'.freeze
     CONTENT_TYPE   = 'application/jrd+json'.freeze
-
-    CORS_HEADERS = {
-      'Access-Control-Allow-Origin' => '*'
-    }.freeze
+    CORS_HEADERS   = { 'Access-Control-Allow-Origin' => '*' }.freeze
 
     # @param app [#call] The next Rack app in the stack
     # @yield [resource, request] Block called to look up a resource
@@ -62,15 +59,23 @@ module WebFinger
     end
 
     def bad_request message
-      [400, response_headers('application/json'), [JSON.generate({ error: message })]]
+      [
+        400,
+        response_headers('application/json'),
+        [JSON.generate({ error: message })]
+      ]
     end
 
     def not_found resource
-      [404, response_headers('application/json'), [JSON.generate({ error: "Resource not found: #{resource}" })]]
+      [
+        404,
+        response_headers('application/json'),
+        [JSON.generate({ error: "Resource not found: #{resource}" })]
+      ]
     end
 
     def response_headers content_type
-      CORS_HEADERS.merge('Content-Type' => content_type)
+      CORS_HEADERS.merge 'Content-Type' => content_type
     end
   end
 end

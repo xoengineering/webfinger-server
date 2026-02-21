@@ -12,8 +12,8 @@ require_relative 'web_finger/host_meta'
 #
 # @example Client: fetch full JRD
 #   response = WebFinger.client.fetch('acct:user@mastodon.social')
-#   response.subject   # => "acct:user@mastodon.social"
-#   response.actor_uri # => "https://mastodon.social/users/user"
+#   response.subject   # => 'acct:user@mastodon.social'
+#   response.actor_uri # => 'https://mastodon.social/users/user'
 #
 # @example Server: Rack middleware
 #   use WebFinger::Server do |resource, request|

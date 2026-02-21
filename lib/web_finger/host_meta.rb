@@ -10,6 +10,7 @@ module WebFinger
   class HostMeta
     HOST_META_PATH      = '/.well-known/host-meta'.freeze
     HOST_META_JSON_PATH = '/.well-known/host-meta.json'.freeze
+    CORS_HEADERS        = { 'Access-Control-Allow-Origin' => '*' }.freeze
 
     XRD_TEMPLATE = <<~XML.freeze
       <?xml version="1.0" encoding="UTF-8"?>
@@ -17,10 +18,6 @@ module WebFinger
         <Link rel="lrdd" template="https://%<domain>s/.well-known/webfinger?resource={uri}" />
       </XRD>
     XML
-
-    CORS_HEADERS = {
-      'Access-Control-Allow-Origin' => '*'
-    }.freeze
 
     # @param app [#call] The next Rack app in the stack
     # @param domain [String] The domain to use in the host-meta template
@@ -49,19 +46,18 @@ module WebFinger
     end
 
     def serve_json
-      body = JSON.generate(
-        links: [
-          {
-            rel:      'lrdd',
-            template: "https://#{@domain}/.well-known/webfinger?resource={uri}"
-          }
-        ]
-      )
+      body = JSON.generate links: [
+        {
+          rel:      'lrdd',
+          template: "https://#{@domain}/.well-known/webfinger?resource={uri}"
+        }
+      ]
+
       [200, response_headers('application/json'), [body]]
     end
 
     def response_headers content_type
-      CORS_HEADERS.merge('Content-Type' => content_type)
+      CORS_HEADERS.merge 'Content-Type' => content_type
     end
   end
 end
