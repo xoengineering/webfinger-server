@@ -25,13 +25,14 @@ module WebFinger
 
     # Fetch the full JRD for a resource
     # @param resource [String] The resource URI (e.g., "acct:user@domain")
+    # @param rel [String, Array<String>, nil] Optional rel type(s) to filter links
     # @return [WebFinger::Response]
     # @raise [WebFinger::FetchError] If HTTP request fails
     # @raise [WebFinger::ParseError] If response is not valid JRD
     # @raise [WebFinger::ResourceNotFound] If resource returns 404
-    def fetch resource
+    def fetch resource, rel: nil
       host, port = extract_host_and_port resource
-      url        = webfinger_url host, port, resource
+      url        = webfinger_url host, port, resource, rel: rel
       response = http_client.get url
 
       raise ResourceNotFound, "Resource not found: #{resource}" if response.code == 404
@@ -80,8 +81,10 @@ module WebFinger
       [host, port&.to_i]
     end
 
-    def webfinger_url host, port, resource
-      query = URI.encode_www_form resource: resource
+    def webfinger_url host, port, resource, rel: nil
+      params = [['resource', resource]]
+      Array(rel).each { params << ['rel', it] } if rel
+      query = URI.encode_www_form params
 
       URI::HTTPS.build(
         host:  host,

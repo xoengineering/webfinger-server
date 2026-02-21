@@ -65,6 +65,24 @@ RSpec.describe WebFinger::Client do
       expect { client.fetch 'acct:user@example.com' }.to raise_error WebFinger::FetchError, /Connection refused/
     end
 
+    it 'passes a single rel parameter' do
+      stub_request(:get, 'https://example.com/.well-known/webfinger?rel=self&resource=acct%3Auser%40example.com')
+        .to_return status: 200, body: jrd_json
+
+      response = client.fetch 'acct:user@example.com', rel: 'self'
+
+      expect(response).to be_a WebFinger::Response
+    end
+
+    it 'passes multiple rel parameters' do
+      stub_request(:get, 'https://example.com/.well-known/webfinger?rel=self&rel=http%3A%2F%2Fwebfinger.net%2Frel%2Fprofile-page&resource=acct%3Auser%40example.com')
+        .to_return status: 200, body: jrd_json
+
+      response = client.fetch 'acct:user@example.com', rel: ['self', 'http://webfinger.net/rel/profile-page']
+
+      expect(response).to be_a WebFinger::Response
+    end
+
     it 'raises ParseError on invalid JSON response' do
       stub_request(:get, 'https://example.com/.well-known/webfinger?resource=acct%3Auser%40example.com')
         .to_return status: 200, body: 'not json'
