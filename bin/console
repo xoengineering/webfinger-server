@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 require 'bundler/setup'
-require 'web_finger'
+require 'webfinger/server'
 
 require 'irb'
 IRB.start __FILE__
