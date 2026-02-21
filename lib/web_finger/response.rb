@@ -9,7 +9,7 @@ module WebFinger
   #   response.subject    # => "acct:user@example.com"
   #   response.actor_uri  # => "https://example.com/users/user"
   class Response
-    ACTIVITYPUB_TYPES = [
+    ACTIVITY_PUB_TYPES = [
       'application/activity+json',
       'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'
     ].freeze
@@ -56,7 +56,7 @@ module WebFinger
     # @return [String, nil]
     def actor_uri
       self_links = links_for 'self'
-      activity_pub_link = self_links.find { ACTIVITYPUB_TYPES.include? it[:type] }
+      activity_pub_link = self_links.find { ACTIVITY_PUB_TYPES.include? it[:type] }
 
       activity_pub_link&.dig :href
     end
