@@ -51,6 +51,27 @@ RSpec.describe WebFinger::Client do
       expect { client.fetch 'acct:nobody@example.com' }.to raise_error WebFinger::ResourceNotFound, /not found/
     end
 
+    it 'raises BadRequest on 400' do
+      stub_request(:get, 'https://example.com/.well-known/webfinger?resource=acct%3Abad%40example.com')
+        .to_return status: 400
+
+      expect { client.fetch 'acct:bad@example.com' }.to raise_error WebFinger::BadRequest, /400/
+    end
+
+    it 'raises Unauthorized on 401' do
+      stub_request(:get, 'https://example.com/.well-known/webfinger?resource=acct%3Auser%40example.com')
+        .to_return status: 401
+
+      expect { client.fetch 'acct:user@example.com' }.to raise_error WebFinger::Unauthorized, /401/
+    end
+
+    it 'raises Forbidden on 403' do
+      stub_request(:get, 'https://example.com/.well-known/webfinger?resource=acct%3Auser%40example.com')
+        .to_return status: 403
+
+      expect { client.fetch 'acct:user@example.com' }.to raise_error WebFinger::Forbidden, /403/
+    end
+
     it 'raises FetchError on 500' do
       stub_request(:get, 'https://example.com/.well-known/webfinger?resource=acct%3Auser%40example.com')
         .to_return status: 500

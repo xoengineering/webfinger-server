@@ -35,8 +35,7 @@ module WebFinger
       url        = webfinger_url host, port, resource, rel: rel
       response = http_client.get url
 
-      raise ResourceNotFound, "Resource not found: #{resource}" if response.code == 404
-      raise FetchError, "HTTP #{response.code}" unless response.status.success?
+      raise_for_status response, resource unless response.status.success?
 
       Response.parse response.body.to_s
     rescue HTTP::Error => e
@@ -81,6 +80,16 @@ module WebFinger
     def parse_host_and_port host_string
       host, port = host_string.split(':', 2)
       [host, port&.to_i]
+    end
+
+    def raise_for_status response, resource
+      case response.code
+      when 400 then raise BadRequest,       "HTTP 400 Bad Request: #{resource}"
+      when 401 then raise Unauthorized,     "HTTP 401 Unauthorized: #{resource}"
+      when 403 then raise Forbidden,        "HTTP 403 Forbidden: #{resource}"
+      when 404 then raise ResourceNotFound, "Resource not found: #{resource}"
+      else          raise FetchError,       "HTTP #{response.code}"
+      end
     end
 
     def webfinger_url host, port, resource, rel: nil
