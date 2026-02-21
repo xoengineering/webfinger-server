@@ -64,6 +64,28 @@ response.links_for 'http://webfinger.net/rel/profile-page'
 # => [{rel: "...", type: "text/html", href: "..."}]
 ```
 
+#### Real-World Example
+
+```ruby
+client   = WebFinger::Client.new
+response = client.fetch 'acct:veganstraightedge@ruby.social'
+
+response.subject
+# => "acct:veganstraightedge@ruby.social"
+
+response.aliases
+# => ["https://ruby.social/@veganstraightedge",
+#     "https://ruby.social/users/veganstraightedge"]
+
+response.actor_uri
+# => "https://ruby.social/users/veganstraightedge"
+
+response.link 'http://webfinger.net/rel/profile-page'
+# => {rel: "http://webfinger.net/rel/profile-page",
+#     type: "text/html",
+#     href: "https://ruby.social/@veganstraightedge"}
+```
+
 #### Client Options
 
 ```ruby

@@ -1,4 +1,4 @@
-require 'web_finger/version'
+require_relative 'lib/web_finger/version'
 
 Gem::Specification.new do |spec|
   spec.name     = 'web_finger'
