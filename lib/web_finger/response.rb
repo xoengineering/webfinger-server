@@ -14,7 +14,7 @@ module WebFinger
       'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'
     ].freeze
 
-    attr_reader :subject, :aliases, :properties, :links
+    attr_reader :subject, :aliases, :properties, :links, :expires
 
     # Parse a JRD from JSON string or Hash
     # @param json [String, Hash] Raw JSON or pre-parsed Hash
@@ -26,16 +26,18 @@ module WebFinger
       new subject:    data[:subject],
           aliases:    data[:aliases] || [],
           properties: data[:properties] || {},
-          links:      data[:links] || []
+          links:      data[:links] || [],
+          expires:    data[:expires]
     rescue JSON::ParserError => e
       raise ParseError, "Invalid JSON: #{e.message}"
     end
 
-    def initialize subject:, aliases: [], properties: {}, links: []
+    def initialize subject:, aliases: [], properties: {}, links: [], expires: nil
       @subject    = subject
       @aliases    = aliases
       @properties = properties
       @links      = links
+      @expires    = expires
     end
 
     # Find the first link matching a given rel
@@ -66,6 +68,7 @@ module WebFinger
     def to_h
       {
         subject:    subject,
+        expires:    expires,
         aliases:    aliases,
         properties: properties,
         links:      links

@@ -135,6 +135,76 @@ RSpec.describe WebFinger::Response do
     end
   end
 
+  describe '#expires' do
+    it 'parses the expires field' do
+      data = jrd_hash.merge('expires' => '2026-03-01T00:00:00Z')
+      response = described_class.parse data
+
+      expect(response.expires).to eq '2026-03-01T00:00:00Z'
+    end
+
+    it 'is nil when not present' do
+      response = described_class.parse jrd_hash
+
+      expect(response.expires).to be_nil
+    end
+
+    it 'is included in to_h when present' do
+      data = jrd_hash.merge('expires' => '2026-03-01T00:00:00Z')
+      response = described_class.parse data
+
+      expect(response.to_h[:expires]).to eq '2026-03-01T00:00:00Z'
+    end
+  end
+
+  describe 'link titles' do
+    it 'preserves titles hash on links' do
+      data = {
+        'subject' => 'acct:user@example.com',
+        'links'   => [
+          {
+            'rel'    => 'http://webfinger.net/rel/profile-page',
+            'href'   => 'https://example.com/@user',
+            'titles' => { 'en-us' => "User's Blog", 'ja' => 'Userのブログ' }
+          }
+        ]
+      }
+      response = described_class.parse data
+      link = response.link 'http://webfinger.net/rel/profile-page'
+
+      expect(link[:titles]).to eq('en-us': "User's Blog", ja: 'Userのブログ')
+    end
+  end
+
+  describe 'link properties' do
+    it 'preserves properties on links without href' do
+      data = {
+        'subject' => 'acct:user@example.com',
+        'links'   => [
+          {
+            'rel'        => 'http://webfinger.net/rel/smtp-server',
+            'properties' => { 'host' => 'smtp.example.com', 'port' => '587' }
+          }
+        ]
+      }
+      response = described_class.parse data
+      link = response.link 'http://webfinger.net/rel/smtp-server'
+
+      expect(link[:href]).to be_nil
+      expect(link[:properties]).to eq(host: 'smtp.example.com', port: '587')
+    end
+  end
+
+  describe 'link template' do
+    it 'provides access to link template' do
+      response = described_class.parse jrd_hash
+      link = response.link 'http://ostatus.org/schema/1.0/subscribe'
+
+      expect(link[:template]).to eq 'https://example.com/authorize_interaction?uri={uri}'
+      expect(link[:href]).to be_nil
+    end
+  end
+
   describe '#to_h' do
     it 'returns a hash representation' do
       response = described_class.parse jrd_hash
