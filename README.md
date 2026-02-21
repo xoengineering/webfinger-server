@@ -5,15 +5,15 @@ is a protocol for discovering information about people and resources
 using standard HTTP methods. It is widely used in the Fediverse to
 resolve `acct:user@domain` URIs to ActivityPub actor endpoints.
 
-A pure Ruby implementation of the WebFinger protocol (RFC 7033),
+A Ruby gem implementation of the WebFinger protocol (RFC 7033),
 providing both client and Rack middleware server functionality.
 
 ## Features
 
-- Pure Ruby  - Works with any Ruby framework or plain scripts
-- Client     - Resolve `acct:` URIs to ActivityPub actor endpoints
-- Server     - Rack middleware serving `/.well-known/webfinger` responses
-- Host-Meta  - Legacy `/.well-known/host-meta` support (XML and JSON)
+- Framework agnostic - Works with any Ruby framework or plain scripts
+- Client             - Resolve `acct:` URIs to ActivityPub actor endpoints
+- Server             - Rack middleware for `/.well-known/webfinger` responses
+- Host-Meta          - Legacy `/.well-known/host-meta` support (XML and JSON)
 
 ## Installation
 
@@ -58,10 +58,10 @@ response.actor_uri # => "https://mastodon.social/users/user"
 
 # Access individual links
 response.link 'self'
-# => {"rel"=>"self", "type"=>"application/activity+json", "href"=>"..."}
+# => {rel: "self", type: "application/activity+json", href: "..."}
 
 response.links_for 'http://webfinger.net/rel/profile-page'
-# => [{"rel"=>"...", "type"=>"text/html", "href"=>"..."}]
+# => [{rel: "...", type: "text/html", href: "..."}]
 ```
 
 #### Client Options

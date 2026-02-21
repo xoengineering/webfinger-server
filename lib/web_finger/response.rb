@@ -25,7 +25,7 @@ module WebFinger
       new subject:    data['subject'],
           aliases:    data['aliases'] || [],
           properties: data['properties'] || {},
-          links:      data['links'] || []
+          links:      (data['links'] || []).map { it.transform_keys(&:to_sym) }
     rescue JSON::ParserError => e
       raise ParseError, "Invalid JSON: #{e.message}"
     end
@@ -41,22 +41,22 @@ module WebFinger
     # @param rel [String] The relation type
     # @return [Hash, nil]
     def link rel
-      links.find { it['rel'] == rel }
+      links.find { it[:rel] == rel }
     end
 
     # Find all links matching a given rel
     # @param rel [String] The relation type
     # @return [Array<Hash>]
     def links_for rel
-      links.select { it['rel'] == rel }
+      links.select { it[:rel] == rel }
     end
 
     # Convenience: find the ActivityPub actor URI
     # @return [String, nil]
     def actor_uri
       self_links = links_for 'self'
-      ap_link = self_links.find { ACTIVITYPUB_TYPES.include? it['type'] }
-      ap_link&.dig 'href'
+      ap_link = self_links.find { ACTIVITYPUB_TYPES.include? it[:type] }
+      ap_link&.dig :href
     end
 
     # Convert to Hash

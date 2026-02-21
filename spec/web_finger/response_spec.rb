@@ -65,8 +65,8 @@ RSpec.describe WebFinger::Response do
     it 'finds the first link matching a rel' do
       link = response.link 'self'
 
-      expect(link['href']).to eq 'https://example.com/users/user'
-      expect(link['type']).to eq 'application/activity+json'
+      expect(link[:href]).to eq 'https://example.com/users/user'
+      expect(link[:type]).to eq 'application/activity+json'
     end
 
     it 'returns nil when no matching link' do
@@ -81,7 +81,7 @@ RSpec.describe WebFinger::Response do
       links = response.links_for 'self'
 
       expect(links.size).to eq 1
-      expect(links.first['href']).to eq 'https://example.com/users/user'
+      expect(links.first[:href]).to eq 'https://example.com/users/user'
     end
 
     it 'returns empty array when no match' do
