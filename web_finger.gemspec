@@ -1,4 +1,4 @@
-require_relative 'lib/web_finger/version'
+require 'web_finger/version'
 
 Gem::Specification.new do |spec|
   spec.name     = 'web_finger'
@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
 
   spec.summary     = 'WebFinger client and server implementation (RFC 7033)'
   spec.description = <<~DESCRIPTION
-    A pure Ruby implementation of the WebFinger protocol (RFC 7033) for the Fediverse,
+    A Ruby gem for WebFinger protocol (RFC 7033) for the Fediverse,
     providing both client and Rack middleware server functionality.
   DESCRIPTION
 
