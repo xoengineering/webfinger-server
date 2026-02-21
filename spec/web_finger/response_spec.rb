@@ -205,6 +205,37 @@ RSpec.describe WebFinger::Response do
     end
   end
 
+  describe 'non-acct: subject schemes' do
+    it 'handles a device: subject' do
+      data = {
+        'subject' => 'device:example.com',
+        'links'   => [
+          { 'rel' => 'self', 'type' => 'application/activity+json', 'href' => 'https://example.com/device' }
+        ]
+      }
+      response = described_class.parse data
+
+      expect(response.subject).to eq 'device:example.com'
+      expect(response.actor_uri).to eq 'https://example.com/device'
+    end
+
+    it 'handles a mailto: subject' do
+      data = {
+        'subject'    => 'mailto:user@example.com',
+        'aliases'    => ['acct:user@example.com'],
+        'properties' => { 'http://schema.org/name' => 'User' },
+        'links'      => [
+          { 'rel' => 'self', 'type' => 'application/activity+json', 'href' => 'https://example.com/users/user' }
+        ]
+      }
+      response = described_class.parse data
+
+      expect(response.subject).to eq 'mailto:user@example.com'
+      expect(response.aliases).to eq ['acct:user@example.com']
+      expect(response.actor_uri).to eq 'https://example.com/users/user'
+    end
+  end
+
   describe '#to_h' do
     it 'returns a hash representation' do
       response = described_class.parse jrd_hash
