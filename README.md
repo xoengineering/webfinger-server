@@ -4,7 +4,7 @@ Rack middleware for serving [WebFinger](https://www.rfc-editor.org/rfc/rfc7033) 
 Widely used in the Fediverse to let others discover your users’ ActivityPub actor endpoints.
 
 For **client** functionality (looking up remote users),
-see the [webfinger](https://rubygems.org/gems/webfinger) gem.
+see the [webfinger](https://github.com/nov/webfinger) gem.
 
 ## Features
 
