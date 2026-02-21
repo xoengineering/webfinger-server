@@ -1,17 +1,16 @@
 # WebFinger Server
 
-Rack middleware for serving [WebFinger](https://www.rfc-editor.org/rfc/rfc7033)
-(RFC 7033) and host-meta responses. Widely used in the Fediverse to let others
-discover your users' ActivityPub actor endpoints.
+Rack middleware for serving [WebFinger](https://www.rfc-editor.org/rfc/rfc7033) (RFC 7033) and host-meta responses.
+Widely used in the Fediverse to let others discover your users’ ActivityPub actor endpoints.
 
-For **client** functionality (looking up remote users), see the
-[webfinger](https://rubygems.org/gems/webfinger) gem.
+For **client** functionality (looking up remote users),
+see the [webfinger](https://rubygems.org/gems/webfinger) gem.
 
 ## Features
 
 - Framework agnostic - Works with any Rack-based Ruby framework
-- Server    - Rack middleware for `/.well-known/webfinger` responses
-- Host-Meta - Legacy `/.well-known/host-meta` support (XML and JSON)
+- Server             - Rack middleware for `/.well-known/webfinger` responses
+- Host-Meta          - Legacy `/.well-known/host-meta` support (XML and JSON)
 
 ## Installation
 
@@ -34,8 +33,6 @@ gem install webfinger-server
 ```
 
 ## Usage
-
-### Server
 
 Rack middleware that serves WebFinger responses:
 
@@ -81,7 +78,38 @@ The middleware handles:
 - 400 for missing or empty `resource` parameter
 - 404 when the handler returns `nil`
 
-### Host-Meta
+### Example Response
+
+A request to `/.well-known/webfinger?resource=acct:veganstraightedge@ruby.social`
+would return:
+
+```json
+{
+  "subject": "acct:veganstraightedge@ruby.social",
+  "aliases": [
+    "https://ruby.social/@veganstraightedge",
+    "https://ruby.social/users/veganstraightedge"
+  ],
+  "links": [
+    {
+      "rel": "http://webfinger.net/rel/profile-page",
+      "type": "text/html",
+      "href": "https://ruby.social/@veganstraightedge"
+    },
+    {
+      "rel": "self",
+      "type": "application/activity+json",
+      "href": "https://ruby.social/users/veganstraightedge"
+    },
+    {
+      "rel": "http://ostatus.org/schema/1.0/subscribe",
+      "template": "https://ruby.social/authorize_interaction?uri={uri}"
+    }
+  ]
+}
+```
+
+## Host-Meta
 
 Optional Rack middleware for legacy `/.well-known/host-meta` support:
 
@@ -92,9 +120,9 @@ use Webfinger::Server::HostMeta, domain: 'example.com'
 Serves both XML (`/.well-known/host-meta`) and JSON (`/.well-known/host-meta.json`)
 responses with LRDD templates pointing to the WebFinger endpoint.
 
-### Framework Integration
+## Framework Integration
 
-#### Rails
+### Rails
 
 ```ruby
 # config.ru (add before Rails app)
@@ -104,7 +132,7 @@ use Webfinger::Server::Middleware do |resource, _request|
 end
 ```
 
-#### Sinatra
+### Sinatra
 
 ```ruby
 require 'sinatra'
@@ -114,6 +142,21 @@ use Webfinger::Server::HostMeta, domain: 'example.com'
 use Webfinger::Server::Middleware do |resource, _request|
   # Look up resource and return JRD hash or nil
 end
+```
+
+### Hanami
+
+```ruby
+# config.ru
+require 'hanami/boot'
+require 'webfinger/server'
+
+use Webfinger::Server::HostMeta, domain: 'example.com'
+use Webfinger::Server::Middleware do |resource, _request|
+  # Look up resource and return JRD hash or nil
+end
+
+run Hanami.app
 ```
 
 ## Development
