@@ -48,14 +48,14 @@ module WebFinger
     # @param rel [String] The relation type
     # @return [Hash, nil]
     def link rel
-      links.find { it[:rel] == rel }
+      links.find { it[:rel] == String(rel) }
     end
 
     # Find all links matching a given rel
     # @param rel [String] The relation type
     # @return [Array<Hash>]
     def links_for rel
-      links.select { it[:rel] == rel }
+      links.select { it[:rel] == String(rel) }
     end
 
     # Convenience: find the ActivityPub actor URI

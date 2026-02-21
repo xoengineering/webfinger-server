@@ -139,7 +139,7 @@ responses with LRDD templates pointing to the WebFinger endpoint.
 # config.ru (add before Rails app)
 use WebFinger::HostMeta, domain: 'example.com'
 use WebFinger::Server do |resource, _request|
-  WebFingerLookup.call resource
+  # Look up resource and return JRD hash or nil
 end
 ```
 
