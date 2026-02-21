@@ -105,6 +105,89 @@ RSpec.describe WebFinger::Client do
     end
   end
 
+  describe '#extract_host_and_port (via fetch)' do
+    it 'handles acct: URI with port' do
+      stub_request(:get, 'https://example.com:8080/.well-known/webfinger?resource=acct%3Auser%40example.com%3A8080')
+        .to_return status: 200, body: jrd_json
+
+      response = client.fetch 'acct:user@example.com:8080'
+
+      expect(response).to be_a WebFinger::Response
+    end
+
+    it 'handles bare email (no acct: prefix)' do
+      stub_request(:get, 'https://example.com/.well-known/webfinger?resource=user%40example.com')
+        .to_return status: 200, body: jrd_json
+
+      response = client.fetch 'user@example.com'
+
+      expect(response).to be_a WebFinger::Response
+    end
+
+    it 'handles dotted local part' do
+      stub_request(:get, 'https://example.com/.well-known/webfinger?resource=first.last%40example.com')
+        .to_return status: 200, body: jrd_json
+
+      response = client.fetch 'first.last@example.com'
+
+      expect(response).to be_a WebFinger::Response
+    end
+
+    it 'handles mailto: URI' do
+      stub_request(:get, 'https://example.com/.well-known/webfinger?resource=mailto%3Auser%40example.com')
+        .to_return status: 200, body: jrd_json
+
+      response = client.fetch 'mailto:user@example.com'
+
+      expect(response).to be_a WebFinger::Response
+    end
+
+    it 'handles bare domain' do
+      stub_request(:get, 'https://example.com/.well-known/webfinger?resource=example.com')
+        .to_return status: 200, body: jrd_json
+
+      response = client.fetch 'example.com'
+
+      expect(response).to be_a WebFinger::Response
+    end
+
+    it 'handles bare domain with path' do
+      stub_request(:get, 'https://example.com/.well-known/webfinger?resource=example.com%2F%7Euser%2F')
+        .to_return status: 200, body: jrd_json
+
+      response = client.fetch 'example.com/~user/'
+
+      expect(response).to be_a WebFinger::Response
+    end
+
+    it 'handles bare domain with port' do
+      stub_request(:get, 'https://example.com:8080/.well-known/webfinger?resource=example.com%3A8080')
+        .to_return status: 200, body: jrd_json
+
+      response = client.fetch 'example.com:8080'
+
+      expect(response).to be_a WebFinger::Response
+    end
+
+    it 'handles https: URI with port' do
+      stub_request(:get, 'https://example.com:8080/.well-known/webfinger?resource=https%3A%2F%2Fexample.com%3A8080%2Fusers%2Fuser')
+        .to_return status: 200, body: jrd_json
+
+      response = client.fetch 'https://example.com:8080/users/user'
+
+      expect(response).to be_a WebFinger::Response
+    end
+
+    it 'handles subdomain' do
+      stub_request(:get, 'https://social.example.com/.well-known/webfinger?resource=acct%3Auser%40social.example.com')
+        .to_return status: 200, body: jrd_json
+
+      response = client.fetch 'acct:user@social.example.com'
+
+      expect(response).to be_a WebFinger::Response
+    end
+  end
+
   describe 'initialization' do
     it 'defaults to 10 second timeout' do
       expect(client.timeout).to eq 10

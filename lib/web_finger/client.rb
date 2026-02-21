@@ -30,8 +30,8 @@ module WebFinger
     # @raise [WebFinger::ParseError] If response is not valid JRD
     # @raise [WebFinger::ResourceNotFound] If resource returns 404
     def fetch resource
-      domain   = extract_domain resource
-      url      = webfinger_url domain, resource
+      host, port = extract_host_and_port resource
+      url        = webfinger_url host, port, resource
       response = http_client.get url
 
       raise ResourceNotFound, "Resource not found: #{resource}" if response.code == 404
@@ -57,21 +57,35 @@ module WebFinger
       client
     end
 
-    # Extract domain from acct: URI or https: URI
-    def extract_domain resource
-      if resource.start_with? 'acct:'
-        resource.split('@').last
-      else
+    # Extract host and port from a resource URI
+    # Handles acct:, mailto:, https://, bare email, and bare domain formats
+    # @return [Array(String, Integer, nil)] host and optional port
+    def extract_host_and_port resource
+      case resource
+      when /\A(acct|mailto):.*@(.+)\z/
+        parse_host_and_port Regexp.last_match(2)
+      when %r{\Ahttps?://}
         uri = URI.parse resource
-        uri.host || resource
+        [uri.host, uri.port == uri.default_port ? nil : uri.port]
+      when /@/
+        parse_host_and_port resource.split('@').last
+      else
+        parse_host_and_port resource.split('/').first
       end
     end
 
-    def webfinger_url domain, resource
+    # Split a "host" or "host:port" string
+    def parse_host_and_port host_string
+      host, port = host_string.split(':', 2)
+      [host, port&.to_i]
+    end
+
+    def webfinger_url host, port, resource
       query = URI.encode_www_form resource: resource
 
       URI::HTTPS.build(
-        host:  domain,
+        host:  host,
+        port:  port,
         path:  WEBFINGER_PATH,
         query: query
       ).to_s
