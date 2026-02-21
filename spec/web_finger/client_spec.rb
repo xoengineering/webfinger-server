@@ -84,7 +84,7 @@ RSpec.describe WebFinger::Client do
     end
 
     it 'returns nil when no ActivityPub link in JRD' do
-      no_ap_jrd = {
+      no_activity_pub_jrd = {
         'subject' => 'acct:user@example.com',
         'links'   => [
           { 'rel' => 'http://webfinger.net/rel/profile-page', 'type' => 'text/html', 'href' => 'https://example.com/@user' }
@@ -92,7 +92,7 @@ RSpec.describe WebFinger::Client do
       }.to_json
 
       stub_request(:get, 'https://example.com/.well-known/webfinger?resource=acct%3Auser%40example.com')
-        .to_return status: 200, body: no_ap_jrd
+        .to_return status: 200, body: no_activity_pub_jrd
 
       expect(client.resolve('acct:user@example.com')).to be_nil
     end
