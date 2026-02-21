@@ -1,8 +1,8 @@
-require_relative 'lib/webfinger_server/version'
+require_relative 'lib/webfinger/server/version'
 
 Gem::Specification.new do |spec|
   spec.name     = 'webfinger-server'
-  spec.version  = WebFingerServer::VERSION
+  spec.version  = Webfinger::Server::VERSION
   spec.authors  = ['Shane Becker']
   spec.email    = ['veganstraightedge@gmail.com']
   spec.homepage = 'https://github.com/xoengineering/webfinger-server'

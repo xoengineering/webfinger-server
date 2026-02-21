@@ -40,10 +40,10 @@ gem install webfinger-server
 Rack middleware that serves WebFinger responses:
 
 ```ruby
-require 'webfinger_server'
+require 'webfinger/server'
 
 # config.ru
-use WebFingerServer::Server do |resource, request|
+use Webfinger::Server::Middleware do |resource, request|
   case resource
   when /\Aacct:(.+)@example\.com\z/
     user = User.find_by username: Regexp.last_match(1)
@@ -86,7 +86,7 @@ The middleware handles:
 Optional Rack middleware for legacy `/.well-known/host-meta` support:
 
 ```ruby
-use WebFingerServer::HostMeta, domain: 'example.com'
+use Webfinger::Server::HostMeta, domain: 'example.com'
 ```
 
 Serves both XML (`/.well-known/host-meta`) and JSON (`/.well-known/host-meta.json`)
@@ -98,8 +98,8 @@ responses with LRDD templates pointing to the WebFinger endpoint.
 
 ```ruby
 # config.ru (add before Rails app)
-use WebFingerServer::HostMeta, domain: 'example.com'
-use WebFingerServer::Server do |resource, _request|
+use Webfinger::Server::HostMeta, domain: 'example.com'
+use Webfinger::Server::Middleware do |resource, _request|
   # Look up resource and return JRD hash or nil
 end
 ```
@@ -108,10 +108,10 @@ end
 
 ```ruby
 require 'sinatra'
-require 'webfinger_server'
+require 'webfinger/server'
 
-use WebFingerServer::HostMeta, domain: 'example.com'
-use WebFingerServer::Server do |resource, _request|
+use Webfinger::Server::HostMeta, domain: 'example.com'
+use Webfinger::Server::Middleware do |resource, _request|
   # Look up resource and return JRD hash or nil
 end
 ```

@@ -1,4 +1,4 @@
-require 'webfinger_server'
+require 'webfinger/server'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
