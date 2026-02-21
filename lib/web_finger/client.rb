@@ -62,16 +62,16 @@ module WebFinger
     # @return [Array(String, Integer, nil)] host and optional port
     def extract_host_and_port resource
       case resource
-      when /\A(acct|mailto):.*@(.+)\z/
+      when /\A(acct|mailto):.*@(.+)\z/ # acct:user@host or mailto:user@host
         parse_host_and_port Regexp.last_match(2)
-      when %r{\Ahttps?://}
+      when %r{\Ahttps?://}             # https://host/path
         uri = URI.parse resource
         [uri.host, uri.port == uri.default_port ? nil : uri.port]
-      when /@/
+      when /@/                         # bare email: user@host
         parse_host_and_port resource.split('@').last
-      when /\A\w+:(.+)\z/
+      when /\A\w+:(.+)\z/              # other schemes: device:host, unknown:user@host
         parse_host_and_port Regexp.last_match(1).split('/').first
-      else
+      else                             # bare domain: host or host/path
         parse_host_and_port resource.split('/').first
       end
     end
