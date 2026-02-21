@@ -1,3 +1,4 @@
+require 'active_support/core_ext/hash/keys'
 require 'json'
 
 module WebFinger
@@ -20,7 +21,7 @@ module WebFinger
     # @return [WebFinger::Response]
     # @raise [WebFinger::ParseError] If JSON is malformed
     def self.parse json
-      data = json.is_a?(String) ? JSON.parse(json, symbolize_names: true) : deep_symbolize_keys(json)
+      data = json.is_a?(String) ? JSON.parse(json, symbolize_names: true) : json.deep_symbolize_keys
 
       new subject:    data[:subject],
           aliases:    data[:aliases] || [],
@@ -55,8 +56,9 @@ module WebFinger
     # @return [String, nil]
     def actor_uri
       self_links = links_for 'self'
-      ap_link = self_links.find { ACTIVITYPUB_TYPES.include? it[:type] }
-      ap_link&.dig :href
+      activity_pub_link = self_links.find { ACTIVITYPUB_TYPES.include? it[:type] }
+
+      activity_pub_link&.dig :href
     end
 
     # Convert to Hash
@@ -73,18 +75,5 @@ module WebFinger
     # Convert to JSON string
     # @return [String]
     def to_json(*) = to_h.to_json(*)
-
-    def self.deep_symbolize_keys hash
-      hash.each_with_object({}) do |(key, value), result|
-        sym_key = key.to_sym
-        result[sym_key] = case value
-                          when Hash  then deep_symbolize_keys(value)
-                          when Array then value.map { it.is_a?(Hash) ? deep_symbolize_keys(it) : it }
-                          else value
-                          end
-      end
-    end
-
-    private_class_method :deep_symbolize_keys
   end
 end

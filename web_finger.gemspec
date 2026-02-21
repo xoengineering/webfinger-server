@@ -35,5 +35,6 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   # Runtime dependencies
+  spec.add_dependency 'activesupport'
   spec.add_dependency 'http', '~> 5.0'
 end
