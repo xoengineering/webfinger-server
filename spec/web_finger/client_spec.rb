@@ -204,6 +204,33 @@ RSpec.describe WebFinger::Client do
 
       expect(response).to be_a WebFinger::Response
     end
+
+    it 'handles device: URI' do
+      stub_request(:get, 'https://example.com/.well-known/webfinger?resource=device%3Aexample.com')
+        .to_return status: 200, body: jrd_json
+
+      response = client.fetch 'device:example.com'
+
+      expect(response).to be_a WebFinger::Response
+    end
+
+    it 'handles device: URI with port' do
+      stub_request(:get, 'https://example.com:8080/.well-known/webfinger?resource=device%3Aexample.com%3A8080')
+        .to_return status: 200, body: jrd_json
+
+      response = client.fetch 'device:example.com:8080'
+
+      expect(response).to be_a WebFinger::Response
+    end
+
+    it 'handles unknown scheme URI with @' do
+      stub_request(:get, 'https://example.com/.well-known/webfinger?resource=unknown%3Auser%40example.com')
+        .to_return status: 200, body: jrd_json
+
+      response = client.fetch 'unknown:user@example.com'
+
+      expect(response).to be_a WebFinger::Response
+    end
   end
 
   describe 'initialization' do

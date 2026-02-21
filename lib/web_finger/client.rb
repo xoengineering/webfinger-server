@@ -70,6 +70,8 @@ module WebFinger
         [uri.host, uri.port == uri.default_port ? nil : uri.port]
       when /@/
         parse_host_and_port resource.split('@').last
+      when /\A\w+:(.+)\z/
+        parse_host_and_port Regexp.last_match(1).split('/').first
       else
         parse_host_and_port resource.split('/').first
       end
