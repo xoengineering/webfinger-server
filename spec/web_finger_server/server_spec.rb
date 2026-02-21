@@ -1,6 +1,6 @@
 require 'rack/test'
 
-RSpec.describe WebFinger::Server do
+RSpec.describe WebFingerServer::Server do
   include Rack::Test::Methods
 
   let(:inner_app) { ->(_env) { [200, { 'content-type': 'text/plain' }, ['OK']] } }

@@ -1,5 +1,4 @@
-require 'web_finger'
-require 'webmock/rspec'
+require 'webfinger_server'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -10,10 +9,5 @@ RSpec.configure do |config|
 
   config.expect_with :rspec do |expectations|
     expectations.syntax = :expect
-  end
-
-  # Disable external HTTP requests
-  config.before do
-    WebMock.disable_net_connect! allow_localhost: true
   end
 end

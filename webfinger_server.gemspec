@@ -1,16 +1,16 @@
-require_relative 'lib/web_finger/version'
+require_relative 'lib/webfinger_server/version'
 
 Gem::Specification.new do |spec|
-  spec.name     = 'web_finger'
-  spec.version  = WebFinger::VERSION
+  spec.name     = 'webfinger-server'
+  spec.version  = WebFingerServer::VERSION
   spec.authors  = ['Shane Becker']
   spec.email    = ['veganstraightedge@gmail.com']
-  spec.homepage = 'https://github.com/xoengineering/web_finger'
+  spec.homepage = 'https://github.com/xoengineering/webfinger-server'
 
-  spec.summary     = 'WebFinger client and server implementation (RFC 7033)'
+  spec.summary     = 'WebFinger server Rack middleware (RFC 7033)'
   spec.description = <<~DESCRIPTION
-    A Ruby gem for WebFinger protocol (RFC 7033) for the Fediverse,
-    providing both client and Rack middleware server functionality.
+    Rack middleware for serving WebFinger (RFC 7033) and host-meta responses.
+    Pairs with the webfinger gem for client functionality.
   DESCRIPTION
 
   spec.license = 'MIT'
@@ -35,6 +35,5 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   # Runtime dependencies
-  spec.add_dependency 'activesupport'
-  spec.add_dependency 'http', '~> 5.0'
+  spec.add_dependency 'rack', '~> 3.0'
 end

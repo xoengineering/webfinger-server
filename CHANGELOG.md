@@ -7,13 +7,10 @@ and this gem uses to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-## [0.1.0] - 2026-02-20
+## [0.1.0] - 2026-02-21
 
 ### Added
 
-- Initial release
-- WebFinger client (RFC 7033)
+- Initial release as `webfinger-server`
 - Rack middleware server for `/.well-known/webfinger`
 - Host-meta support (`/.well-known/host-meta`)
-- Response object with JRD parsing
-- Thorough test suite

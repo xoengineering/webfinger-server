@@ -1,12 +1,12 @@
 require 'json'
 require 'rack'
 
-module WebFinger
+module WebFingerServer
   # Rack middleware that serves host-meta responses
   # Provides /.well-known/host-meta (XML) and /.well-known/host-meta.json (JSON)
   #
   # @example
-  #   use WebFinger::HostMeta, domain: 'example.com'
+  #   use WebFingerServer::HostMeta, domain: 'example.com'
   class HostMeta
     HOST_META_PATH      = '/.well-known/host-meta'.freeze
     HOST_META_JSON_PATH = '/.well-known/host-meta.json'.freeze

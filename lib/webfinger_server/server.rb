@@ -1,11 +1,11 @@
 require 'json'
 require 'rack'
 
-module WebFinger
+module WebFingerServer
   # Rack middleware that serves WebFinger responses per RFC 7033
   #
   # @example
-  #   use WebFinger::Server do |resource, request|
+  #   use WebFingerServer::Server do |resource, request|
   #     case resource
   #     when /\Aacct:(.+)@example\.com\z/
   #       { subject: resource, links: [...] }

@@ -1,26 +1,24 @@
-# WebFinger
+# WebFinger Server
 
-[WebFinger](https://www.rfc-editor.org/rfc/rfc7033)
-is a protocol for discovering information about people and resources
-using standard HTTP methods. It is widely used in the Fediverse to
-resolve `acct:user@domain` URIs to ActivityPub actor endpoints.
+Rack middleware for serving [WebFinger](https://www.rfc-editor.org/rfc/rfc7033)
+(RFC 7033) and host-meta responses. Widely used in the Fediverse to let others
+discover your users' ActivityPub actor endpoints.
 
-A Ruby gem implementation of the WebFinger protocol (RFC 7033),
-providing both client and Rack middleware server functionality.
+For **client** functionality (looking up remote users), see the
+[webfinger](https://rubygems.org/gems/webfinger) gem.
 
 ## Features
 
-- Framework agnostic - Works with any Ruby framework or plain scripts
-- Client             - Resolve `acct:` URIs to ActivityPub actor endpoints
-- Server             - Rack middleware for `/.well-known/webfinger` responses
-- Host-Meta          - Legacy `/.well-known/host-meta` support (XML and JSON)
+- Framework agnostic - Works with any Rack-based Ruby framework
+- Server    - Rack middleware for `/.well-known/webfinger` responses
+- Host-Meta - Legacy `/.well-known/host-meta` support (XML and JSON)
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'web_finger'
+gem 'webfinger-server'
 ```
 
 And then execute:
@@ -32,79 +30,20 @@ bundle install
 Or install it yourself as:
 
 ```sh
-gem install web_finger
+gem install webfinger-server
 ```
 
 ## Usage
-
-### Client
-
-Resolve an `acct:` URI to an ActivityPub actor URI:
-
-```ruby
-require 'web_finger'
-
-# One-liner
-actor_uri = WebFinger.resolve 'acct:user@mastodon.social'
-# => "https://mastodon.social/users/user"
-
-# Or use the client directly for more control
-client = WebFinger::Client.new
-response = client.fetch 'acct:user@mastodon.social'
-
-response.subject   # => "acct:user@mastodon.social"
-response.aliases   # => ["https://mastodon.social/@user"]
-response.actor_uri # => "https://mastodon.social/users/user"
-
-# Access individual links
-response.link 'self'
-# => {rel: "self", type: "application/activity+json", href: "..."}
-
-response.links_for 'http://webfinger.net/rel/profile-page'
-# => [{rel: "...", type: "text/html", href: "..."}]
-```
-
-#### Real-World Example
-
-```ruby
-client   = WebFinger::Client.new
-response = client.fetch 'acct:veganstraightedge@ruby.social'
-
-response.subject
-# => "acct:veganstraightedge@ruby.social"
-
-response.aliases
-# => ["https://ruby.social/@veganstraightedge",
-#     "https://ruby.social/users/veganstraightedge"]
-
-response.actor_uri
-# => "https://ruby.social/users/veganstraightedge"
-
-response.link 'http://webfinger.net/rel/profile-page'
-# => {rel: "http://webfinger.net/rel/profile-page",
-#     type: "text/html",
-#     href: "https://ruby.social/@veganstraightedge"}
-```
-
-#### Client Options
-
-```ruby
-# Custom timeout (default: 10 seconds)
-client = WebFinger::Client.new timeout: 5
-
-# Disable redirect following (default: true)
-client = WebFinger::Client.new follow_redirects: false
-```
 
 ### Server
 
 Rack middleware that serves WebFinger responses:
 
 ```ruby
-require 'web_finger'
+require 'webfinger_server'
 
 # config.ru
-use WebFinger::Server do |resource, request|
+use WebFingerServer::Server do |resource, request|
   case resource
   when /\Aacct:(.+)@example\.com\z/
     user = User.find_by username: Regexp.last_match(1)
@@ -147,7 +86,7 @@ The middleware handles:
 Optional Rack middleware for legacy `/.well-known/host-meta` support:
 
 ```ruby
-use WebFinger::HostMeta, domain: 'example.com'
+use WebFingerServer::HostMeta, domain: 'example.com'
 ```
 
 Serves both XML (`/.well-known/host-meta`) and JSON (`/.well-known/host-meta.json`)
@@ -159,8 +98,8 @@ responses with LRDD templates pointing to the WebFinger endpoint.
 
 ```ruby
 # config.ru (add before Rails app)
-use WebFinger::HostMeta, domain: 'example.com'
-use WebFinger::Server do |resource, _request|
+use WebFingerServer::HostMeta, domain: 'example.com'
+use WebFingerServer::Server do |resource, _request|
   # Look up resource and return JRD hash or nil
 end
 ```
@@ -169,34 +108,11 @@ end
 
 ```ruby
 require 'sinatra'
-require 'web_finger'
+require 'webfinger_server'
 
-use WebFinger::HostMeta, domain: 'example.com'
-use WebFinger::Server do |resource, _request|
+use WebFingerServer::HostMeta, domain: 'example.com'
+use WebFingerServer::Server do |resource, _request|
   # Look up resource and return JRD hash or nil
-end
-```
-
-## Error Handling
-
-```ruby
-WebFinger::Error            # Base error class
-WebFinger::FetchError       # HTTP request failed
-WebFinger::ParseError       # Malformed JRD response
-WebFinger::ResourceNotFound # Resource returned 404
-```
-
-Example:
-
-```ruby
-begin
-  uri = WebFinger.resolve 'acct:user@example.com'
-rescue WebFinger::ResourceNotFound
-  puts 'User not found'
-rescue WebFinger::FetchError => e
-  puts "Request failed: #{e.message}"
-rescue WebFinger::ParseError => e
-  puts "Invalid response: #{e.message}"
 end
 ```
 
@@ -229,7 +145,7 @@ bundle exec rake
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at the
-https://github.com/xoengineering/web_finger repo.
+https://github.com/xoengineering/webfinger-server repo.
 
 ## License
 

@@ -6,7 +6,6 @@ gem 'bundler', '~> 4.0'
 gem 'irb',     '~> 1.17'
 gem 'rake',    '~> 13.3'
 gem 'rspec',   '~> 3.13'
-gem 'webmock', '~> 3.26'
 
 # Rack for server middleware testing
 gem 'rack',      '~> 3.0'
